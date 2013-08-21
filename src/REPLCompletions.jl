@@ -125,9 +125,21 @@ module REPLCompletions
     end
 
     import Base: parse, next, done, getindex, start, rstrip, strip, endof, convert
-    for f in (:next,:done,:getindex,:start,:rstrip,:endof)
-        @eval ($(f))(x::ShellCompleteString,args...) = ($(f))(x.s,args...)
+
+    # need to mirror the type-specific signatures in string.jl to
+    # prevent method ambiguities, rather than foo(x,args...) = foo(x.s,args...)
+    start(x::ShellCompleteString) = start(x.s)
+    next(x::ShellCompleteString,i::Int) = next(x.s,i)
+    next(x::ShellCompleteString,i::Integer) = next(x.s,i)
+    done(x::ShellCompleteString,i) = done(x.s,i)
+    endof(x::ShellCompleteString) = endof(x.s)
+    getindex(x::ShellCompleteString,i::Range1{Int}) = getindex(x.s,i)
+    getindex{T<:Integer}(x::ShellCompleteString,i::Range1{T}) = getindex(x.s,i)
+    for T in (:Int,:Integer,:Real,:AbstractVector)
+        @eval getindex(x::ShellCompleteString,i::$T) = getindex(x.s,i)
     end
+    rstrip(x::ShellCompleteString) = rstrip(x.s)
+    rstrip(x::ShellCompleteString, c::Base.Chars) = rstrip(x.s,c)
 
     convert(::Type{Ptr{Uint8}},s::ShellCompleteString) = convert(Ptr{Uint8},s.s)
     strip(s::ShellCompleteString) = (s.s = strip(s.s); s)
