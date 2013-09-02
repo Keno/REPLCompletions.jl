@@ -4,6 +4,10 @@ module REPLCompletions
 
     using Base.Meta
 
+    function completes_global(x, name)
+        return beginswith(x, name) && !in('#', x)
+    end
+
     # REPL Symbol Completions
     function complete_symbol(sym)
         # Find module
@@ -66,7 +70,7 @@ module REPLCompletions
                 for m in mods
                     ssyms = names(m)
                     syms = map!(string,Array(UTF8String,length(ssyms)),ssyms)
-                    append!(suggestions,syms[map((x)->beginswith(x,name),syms)])
+                    append!(suggestions,syms[map((x)->completes_global(x,name),syms)])
                 end
                 ssyms = names(mod,true,true)
                 syms = map!(string,Array(UTF8String,length(ssyms)),ssyms)
@@ -74,7 +78,7 @@ module REPLCompletions
                 ssyms = names(mod,true,false)
                 syms = map!(string,Array(UTF8String,length(ssyms)),ssyms)
             end
-            append!(suggestions,syms[map((x)->beginswith(x,name),syms)])
+            append!(suggestions,syms[map((x)->completes_global(x,name),syms)])
         else
             # Looking for a member of a type
             fields = t.names
@@ -95,7 +99,7 @@ module REPLCompletions
         dotpos = 0
         while startpos >= 1
             c = string[startpos]
-            if c < 0x80 && contains(non_word_chars,char(c)) 
+            if c < 0x80 && in(char(c), non_word_chars)
                 if c != '.'
                     startpos = nextind(string,startpos)
                     break
