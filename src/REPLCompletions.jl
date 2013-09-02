@@ -121,43 +121,10 @@ module REPLCompletions
         complete_symbol(string[startpos:pos]), (dotpos+1):pos
     end
 
-    # Julia shell-mode completions
-    type ShellCompleteString <: String
-        s::String
-        last_parse::Range1
-        ShellCompleteString(s::String,last_parse::Range1) = new(s,last_parse)
-    end
-
-    import Base: parse, next, done, getindex, start, rstrip, strip, endof, convert
-
-    # need to mirror the type-specific signatures in string.jl to
-    # prevent method ambiguities, rather than foo(x,args...) = foo(x.s,args...)
-    start(x::ShellCompleteString) = start(x.s)
-    next(x::ShellCompleteString,i::Int) = next(x.s,i)
-    next(x::ShellCompleteString,i::Integer) = next(x.s,i)
-    done(x::ShellCompleteString,i) = done(x.s,i)
-    endof(x::ShellCompleteString) = endof(x.s)
-    getindex(x::ShellCompleteString,i::Range1{Int}) = getindex(x.s,i)
-    getindex{T<:Integer}(x::ShellCompleteString,i::Range1{T}) = getindex(x.s,i)
-    for T in (:Int,:Integer,:Real,:AbstractVector)
-        @eval getindex(x::ShellCompleteString,i::$T) = getindex(x.s,i)
-    end
-    rstrip(x::ShellCompleteString) = rstrip(x.s)
-    rstrip(x::ShellCompleteString, c::Base.Chars) = rstrip(x.s,c)
-
-    convert(::Type{Ptr{Uint8}},s::ShellCompleteString) = convert(Ptr{Uint8},s.s)
-    strip(s::ShellCompleteString) = (s.s = strip(s.s); s)
-
-    function parse(s::ShellCompleteString, pos::Int, greedy::Bool=true, err::Bool=true)
-        ex,retpos = parse(s.s,pos,greedy,false) #Don't throw erors
-        s.last_parse = pos:retpos
-        ex,retpos
-    end
-
     function shell_completions(string,pos)
         # First parse everything up to the current position
-        scs = ShellCompleteString(string[1:pos],0:-1)
-        args = Base.shell_parse(scs,true)
+        scs = string[1:pos]
+        args, last_parse = Base.shell_parse(scs,true)
         # Now look at the last this we parsed
         arg = args.args[end].args[end]
         if isa(arg,String)
@@ -183,7 +150,7 @@ module REPLCompletions
             r = (nextind(string,pos-sizeof(name))):pos
             return (ret,r,string[r])
         elseif isexpr(arg,:escape) && (isexpr(arg.args[1],:continue) || isexpr(arg.args[1],:error))
-            r = first(scs.last_parse):prevind(scs.last_parse,last(scs.last_parse))
+            r = first(last_parse):prevind(last_parse,last(last_parse))
             partial = scs[r]
             ret, range = completions(partial,endof(partial))
             range += first(r)-1
