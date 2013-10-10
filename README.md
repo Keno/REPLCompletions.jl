@@ -10,6 +10,7 @@ Tab completion for your Julia REPL.
 - [ ] Methods of a function if inside a function call.
 - [ ] Importable modules after `using \t`
 - [ ] Help for function if pos is at the beginning of a function call
+
 ## Shell
 - [x] Accessible command line programs
 - [ ] Arguments for common programs (like git pull, push, commit, checkout)
