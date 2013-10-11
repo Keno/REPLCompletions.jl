@@ -3,6 +3,18 @@ REPLCompletions.jl
 
 Tab completion for your Julia REPL.
 
+# Possible completions
+## Julia
+- [x] Names of variables and functions defined or imported to the global scope.
+- [ ] Names of variables and functions defined in the current cell/string.
+- [ ] Methods of a function if inside a function call.
+- [ ] Importable modules after `using \t`
+- [ ] Help for function if pos is at the beginning of a function call
+
+## Shell
+- [x] Accessible command line programs
+- [ ] Arguments for common programs (like git pull, push, commit, checkout)
+
 # The interface
 
 The interface is very simple. There are two exported methods provided:
