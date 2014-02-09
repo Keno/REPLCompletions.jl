@@ -122,7 +122,7 @@ module REPLCompletions
         ffunc = (mod,x)->true
         suggestions = UTF8String[]
         r = rsearch(string,"using",startpos)
-        if all(isspace,string[nextind(string,last(r)):prevind(string,startpos)])
+        if !isempty(r) && all(isspace,string[nextind(string,last(r)):prevind(string,startpos)])
             # We're right after using. Let's look only for packages
             # and modules we can reach form here
 
