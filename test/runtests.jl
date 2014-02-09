@@ -2,6 +2,9 @@ using REPLCompletions
 using Base.Test
 
 module CompletionFoo
+    module CompletionFoo2
+
+    end
     const bar = 1
     foo() = bar
 end
@@ -38,6 +41,31 @@ c,r = test_complete(s)
 @test in("foo",c)
 @test r == 20:20
 @test s[r] == "f"
+
+# Test completion of packages
+mkp(p) = ((@assert !isdir(p)); mkdir(p))
+mkp(Pkg.dir("MyAwesomePackage"))
+mkp(Pkg.dir("CompletionFooPackage"))
+
+s = "using MyAwesome"
+c,r = test_complete(s)
+@test in("MyAwesomePackage",c)
+@test s[r] == "MyAwesome"
+
+s = "using Completion"
+c,r = test_complete(s)
+@test in("CompletionFoo",c) #The module
+@test in("CompletionFooPackage",c) #The package
+@test s[r] == "Completion"
+
+s = "using CompletionFoo.Completion"
+c,r = test_complete(s)
+@test in("CompletionFoo2",c)
+@test s[r] == "Completion"
+
+rmdir(Pkg.dir("MyAwesomePackage"))
+rmdir(Pkg.dir("CompletionFooPackage"))
+
 
 @unix_only begin
     #Assume that we can rely on the existence and accessibility of /tmp
