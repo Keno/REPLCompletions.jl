@@ -176,7 +176,7 @@ module REPLCompletions
             end
             r = (nextind(string,pos-sizeof(name))):pos
             return (ret,r,string[r])
-        elseif isexpr(arg,:escape) && (isexpr(arg.args[1],:continue) || isexpr(arg.args[1],:error))
+        elseif isexpr(arg,:escape) && (isexpr(arg.args[1],:incomplete) || isexpr(arg.args[1],:error))
             r = first(last_parse):prevind(last_parse,last(last_parse))
             partial = scs[r]
             ret, range = completions(partial,endof(partial))
