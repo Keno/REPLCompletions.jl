@@ -63,7 +63,7 @@ module REPLCompletions
 
         suggestions = String[]
         if lookup_module
-            # We will exlcude the results that the user does not want, as well
+            # We will exclude the results that the user does not want, as well
             # as excluding Main.Main.Main, etc., because that's most likely not what
             # the user wants
             p = s->(ffunc(mod,s) && s != module_name(mod))
@@ -91,7 +91,7 @@ module REPLCompletions
             fields = t.names
             for field in fields
                 s = string(field)
-                if beginswith(s,name) && 
+                if beginswith(s,name)
                     push!(suggestions,s)
                 end
             end
