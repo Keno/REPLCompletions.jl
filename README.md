@@ -6,6 +6,7 @@ Tab completion for your Julia REPL.
 # Possible completions
 ## Julia
 - [x] Names of variables and functions defined or imported to the global scope.
+- [x] Autocomplete fields of composite types after `.` wherever possible.
 - [ ] Names of variables and functions defined in the current cell/string.
 - [ ] Methods of a function if inside a function call.
 - [ ] Importable modules after `using \t`
